@@ -1,0 +1,1001 @@
+import { useEffect, useRef, useState } from 'react'
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpRight,
+  Bookmark,
+  Check,
+  ChevronRight,
+  CircleHelp,
+  CloudOff,
+  Compass,
+  Droplets,
+  ExternalLink,
+  LayoutDashboard,
+  LoaderCircle,
+  LocateFixed,
+  MapPin,
+  Moon,
+  RefreshCw,
+  Sparkles,
+  Sun,
+  Sunrise,
+  Sunset,
+  Wind,
+  X,
+} from 'lucide-react'
+import ForecastChart, { type Metric } from './components/ForecastChart'
+import LocationSearch from './components/LocationSearch'
+import WeatherIcon from './components/WeatherIcon'
+import { useStoredState } from './lib/storage'
+import {
+  dayLabel,
+  decimal,
+  DEFAULT_LOCATION,
+  getForecast,
+  hoursForDay,
+  isLocation,
+  localTime,
+  locationKey,
+  temperature,
+  weatherDescription,
+  type Forecast,
+  type Location,
+  type Unit,
+} from './lib/weather'
+
+const isUnit = (value: unknown): value is Unit =>
+  value === 'celsius' || value === 'fahrenheit'
+const isTheme = (value: unknown): value is 'light' | 'dark' =>
+  value === 'light' || value === 'dark'
+const isFavorites = (value: unknown): value is Location[] =>
+  Array.isArray(value) && value.length <= 20 && value.every(isLocation)
+
+function useForecast(location: Location, revision: number) {
+  const key = locationKey(location)
+  const [result, setResult] = useState<{
+    key: string
+    data: Forecast | null
+    error: string
+    loading: boolean
+  }>({ key: '', data: null, error: '', loading: true })
+  useEffect(() => {
+    const controller = new AbortController()
+    setResult({ key, data: null, error: '', loading: true })
+    getForecast(location, controller.signal)
+      .then((data) => {
+        if (!controller.signal.aborted)
+          setResult({ key, data, error: '', loading: false })
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted)
+          setResult({
+            key,
+            data: null,
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Não foi possível carregar a previsão.',
+            loading: false,
+          })
+      })
+    return () => controller.abort()
+  }, [key, revision])
+  return result.key === key
+    ? result
+    : { key, data: null, error: '', loading: true }
+}
+
+export default function App() {
+  const [location, setLocation] = useStoredState(
+    'weather-lab.location',
+    DEFAULT_LOCATION,
+    isLocation,
+  )
+  const [favorites, setFavorites] = useStoredState<Location[]>(
+    'weather-lab.favorites',
+    [],
+    isFavorites,
+  )
+  const [unit, setUnit] = useStoredState<Unit>(
+    'weather-lab.unit',
+    'celsius',
+    isUnit,
+  )
+  const [theme, setTheme] = useStoredState<'light' | 'dark'>(
+    'weather-lab.theme',
+    'light',
+    isTheme,
+  )
+  const [view, setView] = useState<'overview' | 'favorites'>('overview')
+  const [revision, setRevision] = useState(0)
+  const [selectedDate, setSelectedDate] = useState('')
+  const [metric, setMetric] = useState<Metric>('temperature')
+  const [notice, setNotice] = useState('')
+  const [locating, setLocating] = useState(false)
+  const [about, setAbout] = useState(false)
+  const aboutButton = useRef<HTMLButtonElement>(null)
+  const aboutClose = useRef<HTMLButtonElement>(null)
+  const geolocationRequest = useRef(0)
+  const { data, error, loading } = useForecast(location, revision)
+  const selectedDay =
+    data?.days.find((day) => day.date === selectedDate) ?? data?.days[0]
+  const selectedHours =
+    data && selectedDay ? hoursForDay(data, selectedDay.date) : []
+  const today = data?.days[0]
+  const saved = favorites.some(
+    (item) => locationKey(item) === locationKey(location),
+  )
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+  }, [theme])
+  useEffect(() => {
+    if (!notice) return
+    const timeout = setTimeout(() => setNotice(''), 6500)
+    return () => clearTimeout(timeout)
+  }, [notice])
+  useEffect(() => {
+    if (!about) return
+    aboutClose.current?.focus()
+    const close = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setAbout(false)
+    }
+    document.addEventListener('keydown', close)
+    return () => {
+      document.removeEventListener('keydown', close)
+      aboutButton.current?.focus()
+    }
+  }, [about])
+  useEffect(
+    () => () => {
+      geolocationRequest.current++
+    },
+    [],
+  )
+
+  const selectLocation = (next: Location) => {
+    geolocationRequest.current++
+    setLocating(false)
+    setLocation(next)
+    setSelectedDate('')
+    setView('overview')
+  }
+  const toggleFavorite = () => {
+    if (saved) {
+      setFavorites((items) =>
+        items.filter((item) => locationKey(item) !== locationKey(location)),
+      )
+      setNotice(`${location.name} removida dos favoritos.`)
+    } else if (favorites.length >= 20) {
+      setNotice(
+        'Você pode guardar até 20 localidades. Remova uma para adicionar outra.',
+      )
+    } else {
+      setFavorites((items) => [...items, location])
+      setNotice(`${location.name} adicionada aos favoritos.`)
+    }
+  }
+  const locate = () => {
+    if (!navigator.geolocation) {
+      setNotice(
+        'Seu navegador não oferece geolocalização. Use a busca de cidades.',
+      )
+      return
+    }
+    setLocating(true)
+    const request = ++geolocationRequest.current
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (request !== geolocationRequest.current) return
+        selectLocation({
+          id: `geo-${position.coords.latitude.toFixed(4)}-${position.coords.longitude.toFixed(4)}`,
+          name: 'Minha localização',
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          country: '',
+          region: `${position.coords.latitude.toFixed(2)}°, ${position.coords.longitude.toFixed(2)}°`,
+        })
+      },
+      (failure) => {
+        if (request !== geolocationRequest.current) return
+        setLocating(false)
+        setNotice(
+          failure.code === 1
+            ? 'A localização não foi permitida. Você pode buscar sua cidade pelo nome.'
+            : 'Não foi possível obter sua localização. Tente buscar a cidade pelo nome.',
+        )
+      },
+      { timeout: 12_000, maximumAge: 300_000, enableHighAccuracy: false },
+    )
+  }
+  const currentDescription = data
+    ? weatherDescription(data.current.code).label
+    : ''
+  const displayDate = data
+    ? new Intl.DateTimeFormat('pt-BR', {
+        timeZone: data.timezone,
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      }).format(new Date(data.current.time * 1000))
+    : 'Sua próxima previsão começa aqui'
+
+  return (
+    <>
+      <a href="#main" className="skip-link">
+        Ir para o conteúdo
+      </a>
+      <aside className="sidebar">
+        <a
+          className="brand"
+          href="#main"
+          aria-label="Weather Lab, início"
+          onClick={() => setView('overview')}
+        >
+          <span className="brand-mark">
+            w<span>·</span>
+          </span>
+          <span>
+            weather<span className="brand-light">lab</span>
+            <small>UM NOVO OLHAR PARA O TEMPO</small>
+          </span>
+        </a>
+        <span className="nav-label">SEU ESPAÇO</span>
+        <nav aria-label="Navegação principal">
+          <button
+            className={view === 'overview' ? 'nav-item active' : 'nav-item'}
+            aria-current={view === 'overview' ? 'page' : undefined}
+            onClick={() => setView('overview')}
+          >
+            <LayoutDashboard size={19} />
+            <span>Visão geral</span>
+            <ChevronRight size={16} />
+          </button>
+          <button
+            className={view === 'favorites' ? 'nav-item active' : 'nav-item'}
+            aria-current={view === 'favorites' ? 'page' : undefined}
+            onClick={() => setView('favorites')}
+          >
+            <Bookmark size={19} />
+            <span>Favoritos</span>
+            <span className="nav-count">{favorites.length}</span>
+          </button>
+        </nav>
+        <div className="sidebar-locations">
+          <span className="nav-label">POR PERTO DE VOCÊ</span>
+          <button
+            className="sidebar-location"
+            onClick={() => setView('overview')}
+          >
+            <span className="location-dot" />
+            <span>
+              {location.name}
+              <small>{location.country || 'Localização do dispositivo'}</small>
+            </span>
+            <ArrowUpRight size={15} />
+          </button>
+          {favorites
+            .filter((item) => locationKey(item) !== locationKey(location))
+            .slice(0, 4)
+            .map((item) => (
+              <button
+                className="sidebar-location"
+                key={locationKey(item)}
+                onClick={() => selectLocation(item)}
+              >
+                <MapPin size={14} />
+                <span>
+                  {item.name}
+                  <small>{item.country || item.region}</small>
+                </span>
+                <ArrowUpRight size={15} />
+              </button>
+            ))}
+        </div>
+        <div className="sidebar-bottom">
+          <div className="sidebar-note">
+            <span className="mini-sun">
+              <Sun size={23} />
+            </span>
+            <strong>O dia tem possibilidades.</strong>
+            <p>
+              Uma boa previsão ajuda
+              <br />
+              você a explorar cada uma.
+            </p>
+            <span className="note-line" />
+          </div>
+          <button
+            className="nav-item"
+            aria-label={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+            onClick={() =>
+              setTheme((value) => (value === 'light' ? 'dark' : 'light'))
+            }
+          >
+            <Moon size={18} />
+            <span>{theme === 'light' ? 'Modo escuro' : 'Modo claro'}</span>
+            <span className={`theme-switch ${theme}`} />
+          </button>
+          <button
+            ref={aboutButton}
+            aria-label="Sobre o Weather Lab"
+            className="nav-item about-button"
+            onClick={() => setAbout(true)}
+          >
+            <CircleHelp size={18} />
+            <span>Sobre o Weather Lab</span>
+            <ExternalLink size={13} />
+          </button>
+          <small className="sidebar-version">
+            FEITO PARA OLHAR ALÉM DA JANELA
+          </small>
+        </div>
+      </aside>
+
+      <div className="app-body">
+        <header className="topbar">
+          <div className="breadcrumb">
+            Seu espaço <ChevronRight size={13} />
+            <strong>{view === 'overview' ? 'Visão geral' : 'Favoritos'}</strong>
+          </div>
+          <div className="topbar-actions">
+            <span className="live-indicator">
+              <i />
+              {loading
+                ? 'Consultando previsão'
+                : error
+                  ? 'Previsão indisponível'
+                  : 'Previsão atualizada'}
+            </span>
+            <div className="unit-toggle" aria-label="Unidade de temperatura">
+              <button
+                aria-pressed={unit === 'celsius'}
+                onClick={() => setUnit('celsius')}
+              >
+                °C
+              </button>
+              <button
+                aria-pressed={unit === 'fahrenheit'}
+                onClick={() => setUnit('fahrenheit')}
+              >
+                °F
+              </button>
+            </div>
+            <span className="profile-badge" title="Weather Lab">
+              <Compass size={19} />
+            </span>
+          </div>
+        </header>
+        <main id="main" tabIndex={-1}>
+          <div className="page-heading">
+            <div>
+              <span className="eyebrow">
+                MENOS SURPRESAS. MAIS POSSIBILIDADES.
+              </span>
+              <h1>
+                {view === 'overview' ? (
+                  <>
+                    Seu tempo, em perspectiva<span>.</span>
+                  </>
+                ) : (
+                  <>
+                    Seus lugares favoritos<span>.</span>
+                  </>
+                )}
+              </h1>
+              <p>
+                {view === 'overview'
+                  ? 'Entenda o céu lá fora. Aproveite melhor o dia aqui dentro.'
+                  : 'Uma coleção de lugares que fazem parte dos seus dias.'}
+              </p>
+            </div>
+            <span className="heading-date">
+              <span className="date-dot" />
+              {displayDate}
+            </span>
+          </div>
+          <div className="search-row">
+            <LocationSearch onSelect={selectLocation} />
+            <button
+              className="location-button"
+              aria-label={locating ? 'Localizando…' : 'Usar minha localização'}
+              onClick={locate}
+              disabled={locating}
+            >
+              {locating ? (
+                <LoaderCircle size={17} className="spin" />
+              ) : (
+                <LocateFixed size={17} />
+              )}
+              <span>
+                {locating ? 'Localizando…' : 'Usar minha localização'}
+              </span>
+            </button>
+          </div>
+
+          {view === 'favorites' ? (
+            <section
+              className="favorites-section"
+              aria-label="Localidades favoritas"
+            >
+              <div className="section-heading">
+                <h2>
+                  Seus favoritos{' '}
+                  <span className="inline-count">{favorites.length}</span>
+                </h2>
+                <span>Salvos neste navegador</span>
+              </div>
+              {favorites.length ? (
+                <div className="favorite-grid">
+                  {favorites.map((item) => (
+                    <article
+                      className="panel favorite-card"
+                      key={locationKey(item)}
+                    >
+                      <div className="favorite-card-top">
+                        <span className="favorite-location-icon">
+                          <MapPin size={22} />
+                        </span>
+                        <button
+                          className="icon-button"
+                          aria-label={`Remover ${item.name} dos favoritos`}
+                          onClick={() => {
+                            setFavorites((items) =>
+                              items.filter(
+                                (favorite) =>
+                                  locationKey(favorite) !== locationKey(item),
+                              ),
+                            )
+                            setNotice(`${item.name} removida dos favoritos.`)
+                          }}
+                        >
+                          <X size={17} />
+                        </button>
+                      </div>
+                      <h3>{item.name}</h3>
+                      <p>
+                        {[item.region, item.country]
+                          .filter(Boolean)
+                          .join(', ') || 'Localização do dispositivo'}
+                      </p>
+                      <button
+                        className="text-button"
+                        onClick={() => selectLocation(item)}
+                      >
+                        Explorar previsão <ArrowRight size={16} />
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="panel empty-state">
+                  <span className="empty-icon">
+                    <Bookmark size={30} />
+                  </span>
+                  <h2>Seus lugares, sempre por perto.</h2>
+                  <p>
+                    Busque uma cidade e toque em “Salvar local” para encontrá-la
+                    aqui na próxima visita.
+                  </p>
+                  <button
+                    className="primary-button"
+                    onClick={() => setView('overview')}
+                  >
+                    Explorar uma cidade <ArrowRight size={16} />
+                  </button>
+                </div>
+              )}
+            </section>
+          ) : (
+            <>
+              <div className="location-heading">
+                <div>
+                  <MapPin size={19} />
+                  <h2>
+                    {location.name}
+                    <span>
+                      {location.countryCode ? `, ${location.countryCode}` : ''}
+                    </span>
+                  </h2>
+                  <span className="location-region">
+                    {location.region && location.region !== location.name
+                      ? location.region
+                      : location.country}
+                  </span>
+                </div>
+                <div>
+                  <button
+                    className="icon-button refresh-button"
+                    aria-label="Atualizar previsão"
+                    title="Atualizar previsão"
+                    disabled={loading}
+                    onClick={() => setRevision((value) => value + 1)}
+                  >
+                    <RefreshCw size={16} className={loading ? 'spin' : ''} />
+                  </button>
+                  <button
+                    className={`save-button ${saved ? 'saved' : ''}`}
+                    aria-pressed={saved}
+                    onClick={toggleFavorite}
+                  >
+                    {saved ? <Check size={15} /> : <Bookmark size={15} />}
+                    {saved ? 'Local salvo' : 'Salvar local'}
+                  </button>
+                </div>
+              </div>
+
+              {loading ? (
+                <div
+                  className="loading-dashboard"
+                  role="status"
+                  aria-label="Carregando previsão"
+                >
+                  <div className="skeleton hero-skeleton" />
+                  <div className="skeleton days-skeleton" />
+                  <div className="skeleton graph-skeleton" />
+                  <span className="loading-label">
+                    <LoaderCircle size={17} className="spin" /> Consultando o
+                    céu de {location.name}…
+                  </span>
+                </div>
+              ) : error || !data || !today || !selectedDay ? (
+                <section className="panel error-state" role="alert">
+                  <span className="empty-icon">
+                    <CloudOff size={34} />
+                  </span>
+                  <h2>O céu está um pouco distante.</h2>
+                  <p>
+                    {error ||
+                      'Não há previsão disponível para esta localidade.'}
+                  </p>
+                  <button
+                    className="primary-button"
+                    onClick={() => setRevision((value) => value + 1)}
+                  >
+                    <RefreshCw size={16} /> Tentar novamente
+                  </button>
+                  <small>Você também pode buscar outra cidade acima.</small>
+                </section>
+              ) : (
+                <>
+                  <section
+                    className="current-grid"
+                    aria-label="Condições atuais"
+                  >
+                    <article
+                      className={`current-card ${data.current.isDay ? '' : 'night'}`}
+                    >
+                      <div className="sky-art" aria-hidden="true">
+                        <div className="sky-sun" />
+                        <div className="sky-cloud cloud-one" />
+                        <div className="sky-cloud cloud-two" />
+                        <div className="sky-hill hill-back" />
+                        <div className="sky-hill hill-front" />
+                      </div>
+                      <div className="current-top">
+                        <span className="current-label">
+                          <i /> AGORA EM{' '}
+                          {location.name.toLocaleUpperCase('pt-BR')}
+                        </span>
+                        <span className="current-time">
+                          {localTime(data.current.time, data.timezone)}
+                        </span>
+                      </div>
+                      <div className="current-main">
+                        <div className="current-temperature">
+                          {temperature(data.current.temperature, unit)}
+                          <span>{unit === 'celsius' ? 'C' : 'F'}</span>
+                        </div>
+                        <div className="current-condition">
+                          <WeatherIcon
+                            code={data.current.code}
+                            isDay={data.current.isDay}
+                            size={25}
+                          />
+                          <span>{currentDescription}</span>
+                        </div>
+                        <p>
+                          Sensação térmica de{' '}
+                          {temperature(data.current.apparent, unit)}
+                        </p>
+                      </div>
+                      <div className="current-bottom">
+                        <span>
+                          <ArrowUp size={14} />
+                          {temperature(today.max, unit)}
+                          <span className="current-divider" />
+                          <ArrowDown size={14} />
+                          {temperature(today.min, unit)}
+                        </span>
+                        <span>
+                          Hoje <ArrowUpRight size={14} />
+                        </span>
+                      </div>
+                    </article>
+                    <div className="metrics-grid">
+                      <article className="panel metric-card">
+                        <div className="metric-label">
+                          <span>Chuva hoje</span>
+                          <span className="metric-icon blue">
+                            <Droplets size={18} />
+                          </span>
+                        </div>
+                        <div className="metric-value">
+                          {decimal(today.rain)}
+                          <span>mm</span>
+                        </div>
+                        <p>Acumulado previsto para o dia</p>
+                        <div className="mini-rain" aria-hidden="true">
+                          {hoursForDay(data, today.date)
+                            .filter((_, i) => i % 2 === 0)
+                            .map((hour) => (
+                              <i
+                                key={hour.time}
+                                style={{
+                                  height: `${hour.rain === null ? 3 : Math.min(30, 3 + hour.rain * 9)}px`,
+                                }}
+                              />
+                            ))}
+                        </div>
+                      </article>
+                      <article className="panel metric-card">
+                        <div className="metric-label">
+                          <span>Probabilidade</span>
+                          <span className="metric-icon blue">
+                            <CloudRainIcon />
+                          </span>
+                        </div>
+                        <div className="metric-value">
+                          {decimal(today.probability)}
+                          <span>%</span>
+                        </div>
+                        <p>Máxima de precipitação hoje</p>
+                        <div className="metric-track">
+                          <i
+                            style={{
+                              width: `${Math.min(100, Math.max(0, today.probability ?? 0))}%`,
+                            }}
+                          />
+                        </div>
+                      </article>
+                      <article className="panel metric-card">
+                        <div className="metric-label">
+                          <span>Vento agora</span>
+                          <span className="metric-icon green">
+                            <Wind size={18} />
+                          </span>
+                        </div>
+                        <div className="metric-value">
+                          {decimal(data.current.wind)}
+                          <span>km/h</span>
+                        </div>
+                        <p>Velocidade a 10 m do solo</p>
+                      </article>
+                      <article className="panel metric-card">
+                        <div className="metric-label">
+                          <span>Umidade agora</span>
+                          <span className="metric-icon purple">
+                            <Droplets size={18} />
+                          </span>
+                        </div>
+                        <div className="metric-value">
+                          {decimal(data.current.humidity)}
+                          <span>%</span>
+                        </div>
+                        <p>Umidade relativa do ar</p>
+                      </article>
+                    </div>
+                  </section>
+
+                  <section
+                    className="week-section"
+                    aria-label="Previsão para sete dias"
+                  >
+                    <div className="section-heading">
+                      <h2>
+                        Os próximos dias<span className="section-dot">.</span>
+                      </h2>
+                      <span>
+                        Selecione um dia para explorar <ArrowDown size={13} />
+                      </span>
+                    </div>
+                    <div className="week-grid">
+                      {data.days.map((day, index) => (
+                        <button
+                          className={`day-card ${day.date === selectedDay.date ? 'selected' : ''}`}
+                          key={day.date}
+                          aria-pressed={day.date === selectedDay.date}
+                          aria-label={`${dayLabel(day, data.timezone, index)}, ${weatherDescription(day.code).label}, máxima ${temperature(day.max, unit)}, mínima ${temperature(day.min, unit)}`}
+                          onClick={() => setSelectedDate(day.date)}
+                        >
+                          <span className="day-name">
+                            {dayLabel(day, data.timezone, index)}
+                          </span>
+                          <span className="day-date">
+                            {new Intl.DateTimeFormat('pt-BR', {
+                              timeZone: data.timezone,
+                              day: '2-digit',
+                              month: '2-digit',
+                            }).format(new Date(day.time * 1000))}
+                          </span>
+                          <WeatherIcon code={day.code} size={34} />
+                          <span className="day-temperatures">
+                            <strong>{temperature(day.max, unit)}</strong>
+                            <span>{temperature(day.min, unit)}</span>
+                          </span>
+                          <span className="day-rain">
+                            <Droplets size={12} />
+                            {decimal(day.rain, ' mm')}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+
+                  <div className="detail-grid">
+                    <div className="forecast-column">
+                      <div className="selected-day-label">
+                        <span>
+                          {dayLabel(
+                            selectedDay,
+                            data.timezone,
+                            data.days.indexOf(selectedDay),
+                          )}
+                        </span>
+                        <span>
+                          {new Intl.DateTimeFormat('pt-BR', {
+                            timeZone: data.timezone,
+                            day: 'numeric',
+                            month: 'long',
+                          }).format(new Date(selectedDay.time * 1000))}
+                        </span>
+                      </div>
+                      <ForecastChart
+                        key={selectedDay.date}
+                        hours={selectedHours}
+                        timezone={data.timezone}
+                        unit={unit}
+                        metric={metric}
+                        onMetricChange={setMetric}
+                      />
+                    </div>
+                    <aside className="panel daylight-panel">
+                      <div className="panel-heading">
+                        <div>
+                          <span className="eyebrow">
+                            DO PRIMEIRO AO ÚLTIMO RAIO
+                          </span>
+                          <h2>O ritmo do sol</h2>
+                        </div>
+                        <Sun size={20} className="sun-color" />
+                      </div>
+                      <div className="sun-arc" aria-hidden="true">
+                        <svg viewBox="0 0 260 122">
+                          <path
+                            d="M20 108 A110 90 0 0 1 240 108"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeDasharray="4 5"
+                          />
+                          <path
+                            d="M20 108 A110 90 0 0 1 130 18"
+                            fill="none"
+                            stroke="#d9ae56"
+                            strokeWidth="3"
+                          />
+                          <circle cx="130" cy="18" r="12" fill="#efbc57" />
+                          <line
+                            x1="12"
+                            x2="248"
+                            y1="108"
+                            y2="108"
+                            stroke="currentColor"
+                            strokeWidth="1"
+                          />
+                        </svg>
+                      </div>
+                      <div className="sun-times">
+                        <div>
+                          <Sunrise size={18} />
+                          <span>Nascer do sol</span>
+                          <strong>
+                            {selectedDay.sunrise === null
+                              ? '—'
+                              : localTime(selectedDay.sunrise, data.timezone)}
+                          </strong>
+                        </div>
+                        <div>
+                          <Sunset size={18} />
+                          <span>Pôr do sol</span>
+                          <strong>
+                            {selectedDay.sunset === null
+                              ? '—'
+                              : localTime(selectedDay.sunset, data.timezone)}
+                          </strong>
+                        </div>
+                      </div>
+                      <div className="uv-row">
+                        <span>Índice UV máximo</span>
+                        <strong>
+                          {decimal(selectedDay.uv)}
+                          <span
+                            className={`uv-dot ${selectedDay.uv !== null && selectedDay.uv >= 6 ? 'high' : ''}`}
+                          />
+                        </strong>
+                      </div>
+                    </aside>
+                  </div>
+
+                  <section className="hourly-section">
+                    <div className="section-heading">
+                      <h2>
+                        Ao longo do dia<span className="section-dot">.</span>
+                      </h2>
+                      <span>Uma previsão para cada momento</span>
+                    </div>
+                    <div
+                      className="hourly-grid"
+                      role="region"
+                      aria-label="Resumo horário com rolagem"
+                      tabIndex={0}
+                    >
+                      {selectedHours
+                        .filter((_, i) => i % 3 === 0)
+                        .map((hour) => (
+                          <article className="hour-card" key={hour.time}>
+                            <span>{localTime(hour.time, data.timezone)}</span>
+                            <WeatherIcon
+                              code={hour.code}
+                              isDay={
+                                selectedDay.sunrise !== null &&
+                                selectedDay.sunset !== null
+                                  ? hour.time >= selectedDay.sunrise &&
+                                    hour.time < selectedDay.sunset
+                                  : true
+                              }
+                              size={27}
+                            />
+                            <strong>
+                              {temperature(hour.temperature, unit)}
+                            </strong>
+                            <small>
+                              <Droplets size={11} />
+                              {decimal(hour.rain, ' mm')}
+                            </small>
+                            <span className="hour-probability">
+                              {decimal(hour.probability, '%')} prob.
+                            </span>
+                          </article>
+                        ))}
+                    </div>
+                  </section>
+                  <div className="forecast-note">
+                    <Sparkles size={16} />
+                    <p>
+                      A previsão muda, seus planos podem acompanhar. Atualizada
+                      às{' '}
+                      <strong>
+                        {localTime(data.fetchedAt / 1000, data.timezone)}
+                      </strong>
+                      , no fuso <strong>{data.timezone}</strong>.
+                    </p>
+                    <button
+                      className="text-button"
+                      onClick={() => setRevision((value) => value + 1)}
+                    >
+                      Atualizar <RefreshCw size={13} />
+                    </button>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+          <footer className="footer">
+            <span>
+              <span className="footer-mark">w.</span> Um novo olhar para o
+              tempo.
+            </span>
+            <span>
+              Dados por{' '}
+              <a
+                href="https://open-meteo.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open-Meteo <ArrowUpRight size={11} />
+              </a>{' '}
+              · Localidades por{' '}
+              <a
+                href="https://www.geonames.org/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GeoNames
+              </a>{' '}
+              ·{' '}
+              <a
+                href="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                CC BY 4.0
+              </a>
+            </span>
+          </footer>
+        </main>
+      </div>
+      {notice && (
+        <div className="toast" role="status">
+          <Check size={17} />
+          <span>{notice}</span>
+          <button
+            className="icon-button"
+            aria-label="Fechar mensagem"
+            onClick={() => setNotice('')}
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+      {about && (
+        <div
+          className="modal-backdrop"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setAbout(false)
+          }}
+        >
+          <section
+            className="about-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-title"
+            onKeyDown={(event) => {
+              if (event.key === 'Tab') {
+                event.preventDefault()
+                aboutClose.current?.focus()
+              }
+            }}
+          >
+            <button
+              ref={aboutClose}
+              className="icon-button modal-close"
+              aria-label="Fechar sobre"
+              onClick={() => setAbout(false)}
+            >
+              <X size={20} />
+            </button>
+            <span className="eyebrow">CURIOSIDADE QUE VIRA CLAREZA</span>
+            <h2 id="about-title">
+              Um novo olhar
+              <br />
+              para o tempo<span>.</span>
+            </h2>
+            <p>
+              O Weather Lab é um projeto de Cristian para explorar previsão do
+              tempo com uma experiência simples, útil e visual.
+            </p>
+            <p>
+              As informações vêm de modelos meteorológicos da Open-Meteo.
+              Valores podem mudar e não substituem alertas oficiais. Chuva é a
+              soma de chuva e pancadas; o gráfico apresenta os acumulados da
+              hora anterior.
+            </p>
+            <p>
+              Favoritos, cidade e preferências ficam neste navegador. Ao usar
+              sua localização, as coordenadas são enviadas à Open-Meteo para
+              consultar a previsão.
+            </p>
+            <small>Weather Lab · versão {__APP_VERSION__}</small>
+          </section>
+        </div>
+      )}
+    </>
+  )
+}
+
+function CloudRainIcon() {
+  return <WeatherIcon code={61} size={18} />
+}
