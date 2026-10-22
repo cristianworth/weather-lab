@@ -36,5 +36,15 @@
     "typescript": "7.0.2",
     "vite": "8.3.5",
     "vitest": "5.0.5"
-  }
+  },
+  "license": "MIT",
+  "author": "Cristian (cristianworth)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cristianworth/weather-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cristianworth/weather-lab/issues"
+  },
+  "homepage": "https://github.com/cristianworth/weather-lab#readme"
 }

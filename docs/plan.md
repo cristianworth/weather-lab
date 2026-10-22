@@ -28,4 +28,4 @@ Toda resposta só atualiza o estado se a operação ainda estiver ativa. A troca
 
 Vitest/Testing Library para domínio, horários, unidades, persistência, corrida entre consultas e interações; Playwright/Edge para fluxos reais e responsividade; axe para auditoria automatizada de acessibilidade. O build executa o TypeScript antes de empacotar.
 
-Versão inicial 0.1.0, exibida a partir do `package.json`. Não havia changelog nem política de release. Não foram criados remotos ou branches adicionais. Esta entrega é local, com prévia para revisão; o push e a hospedagem continuam separados da implementação.
+Versão inicial 0.1.0, exibida a partir do `package.json`. Não havia changelog nem política de release. Não foram criados remotos ou branches adicionais. Após a primeira entrega local, Cristian autorizou a documentação open source e o push da `main`, escolhendo MIT para o código. Hospedagem da aplicação permanece fora desta entrega.
