@@ -16,4 +16,7 @@
 - [x] Receber autorização explícita de Cristian para documentar e publicar o código na `main`.
 - [x] Documentar objetivo, processo, arquitetura, contribuição, privacidade e segurança.
 - [x] Aplicar a licença MIT escolhida por Cristian e registrar os avisos de terceiros.
-- [ ] Avaliar hospedagem da aplicação em uma entrega própria, considerando os termos dos serviços externos.
+- [x] Registrar a autonomia de commit e push autorizada por Cristian.
+- [x] Configurar GitHub Pages e workflow de verificações/deploy da `main`.
+- [x] Validar caminhos de produção, marca e favicon em `/weather-lab/`.
+- [x] Adicionar capturas reais de desktop, celular, modo escuro e símbolo ao README.

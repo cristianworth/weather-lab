@@ -145,7 +145,7 @@ export default function LocationSearch({
             ) : status === 'error' ? (
               error
             ) : results.length ? (
-              'SELECIONE UMA LOCALIDADE'
+              'Selecione uma localidade'
             ) : (
               'Nenhuma localidade encontrada. Tente outro nome.'
             )}

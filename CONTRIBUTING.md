@@ -37,7 +37,7 @@ npm test
 npm run build
 ```
 
-Se a formatação falhar, execute `npm run format` e revise o diff. Os testes de domínio e componentes usam respostas controladas e não consultam a API real. Não há pipeline de CI configurado nesta entrega; registre no pull request o que executou.
+Se a formatação falhar, execute `npm run format` e revise o diff. Os testes de domínio e componentes usam respostas controladas e não consultam a API real. O workflow `Checks and Pages` verifica formatação, testes e build, além dos cenários de navegador com respostas controladas. Registre no pull request também suas conferências práticas e a suíte completa com API real, quando executada.
 
 ### Testes de navegador
 
@@ -68,9 +68,39 @@ PLAYWRIGHT_CHANNEL=chromium npm run test:e2e
 
 A configuração padrão usa `msedge`. A alternativa Chromium é suportada pela configuração; a verificação da primeira entrega foi feita com Edge no Windows. Ambientes Linux mínimos podem precisar das dependências de sistema exigidas pelo Playwright.
 
-Os cenários verificam busca real, persistência após recarregar, layout móvel, seleção de dias, modo escuro e recuperação de falha. Os cenários com dados reais dependem da rede e do serviço; distinga falhas externas de regressões. O Playwright usa a porta 5173 e, fora de CI, pode reutilizar a aplicação nessa porta. Feche um servidor de outro projeto antes de rodar a suíte.
+Os cenários verificam busca real, persistência após recarregar, layout móvel, seleção de dias, modo escuro, recuperação de falha e consistência da marca/favicon. Os cenários com dados reais dependem da rede e do serviço; distinga falhas externas de regressões. O Playwright usa a porta 4178, separada da prévia usual na 5173. Defina `WEATHER_LAB_PORT` no ambiente para usar outra porta. Fora de CI, a suíte pode reutilizar a aplicação nessa porta; confira se ela pertence ao Weather Lab antes de executar.
 
 Capturas e traces ficam em `test-results/`, fora do Git. A análise axe cobre critérios automatizáveis nos estados exercitados; complemente com conferência prática.
+
+### Build de produção e capturas de portfólio
+
+O GitHub Pages serve o projeto em `/weather-lab/`. Confira caminhos de JavaScript, CSS, marca e favicon com:
+
+```sh
+npm run build -- --base=/weather-lab/
+npm run test:pages
+```
+
+A suíte de produção inicia uma prévia na porta 4180 e permite os mesmos parâmetros de navegador da suíte padrão. Para gerar as imagens selecionadas do README, inicie uma prévia em outra aba do terminal:
+
+```sh
+npm run preview -- --base=/weather-lab/ --port 4182
+```
+
+No PowerShell:
+
+```powershell
+$env:WEATHER_LAB_URL = 'http://127.0.0.1:4182/weather-lab/'
+npm run screenshots
+```
+
+Em Bash:
+
+```sh
+WEATHER_LAB_URL=http://127.0.0.1:4182/weather-lab/ npm run screenshots
+```
+
+O script usa Edge por padrão e aceita `PLAYWRIGHT_CHANNEL=chromium`. Ele consulta dados reais sem substituir a previsão por fixtures. Confira as quatro imagens em `docs/images/` antes de incluí-las no commit e atualize a data indicada no README. Essas capturas de apresentação são uma exceção intencional aos resultados temporários; não versione traces ou logs.
 
 ### Conferência prática
 

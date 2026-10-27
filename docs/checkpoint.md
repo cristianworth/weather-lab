@@ -1,27 +1,24 @@
 # Ponto de retomada
 
-Atualizado em 22/10/2026. Etapa: implementação 0.1.0 concluída; documentação open source e publicação do código autorizadas por Cristian.
+Atualizado em 27/10/2026. Entrega: redesign Horizonte, galeria de portfólio e publicação via GitHub Pages. Versão funcional 0.1.0; sem release ou incremento de versão nesta entrega.
 
-## Direção atual
+## Direção e autonomia
 
-- Cristian substituiu a tutoria pela execução autônoma. Perguntar somente sobre diferenças relevantes das funcionalidades, sempre com quatro opções e uma recomendação.
-- Transporte e vestuário são exemplos de uso. O aplicativo é geral; a opção escolhida foi painel completo com condições atuais, próximos dias e gráficos horários.
-- Implementados: busca global, sete dias selecionáveis, gráficos de temperatura/chuva, tabela, detalhes solares e UV, resumo horário, geolocalização solicitada, favoritos, °C/°F, modo escuro e persistência local.
-- Stack: React, TypeScript, Vite, CSS/SVG e Open-Meteo. Sem chave, backend ou banco para o escopo atual. Referências ativas: `spec.md`, `plan.md` e `tasks.md`.
-- Cristian solicitou documentação pública, commit e push; escolheu explicitamente MIT. Guias de contribuição, arquitetura, desenvolvimento, privacidade, segurança e avisos de terceiros complementam o README. A versão funcional permanece 0.1.0.
+- Modo execução. Cristian autoriza e incentiva commits e pushes autônomos de entregas reais neste projeto; manter histórico coeso em inglês e verificar changelog/regras antes de commits ou merges.
+- Perguntar somente sobre diferenças relevantes de funcionalidades, com quatro opções e recomendação. O aplicativo é um painel geral de previsão; transporte e roupa são exemplos de uso.
+- Redesign Horizonte: azul atlântico/cobalto/âmbar, Barlow/Barlow Condensed, navegação horizontal, faixa semanal e símbolo SVG original compartilhado. Referências e estudo visual no README.
+- Stack: React, TypeScript, Vite e Open-Meteo. Sem chave ou backend. MIT escolhida por Cristian.
 
-## Evidências
+## Publicação e portfólio
 
-- 16 testes de domínio/componentes aprovados; três cenários Playwright/Edge aprovados com dados reais, persistência, tela de 390 px e recuperação de falha controlada.
-- Auditoria axe WCAG 2 A/AA aprovada nos estados verificados de desktop claro e celular escuro. Capturas conferidas; resultados brutos em `test-results/`, ignorados pelo Git.
-- Build de produção e formatação conferidos. As verificações de acessibilidade são automatizadas e não equivalem a uma auditoria completa com leitores de tela.
-- A ferramenta de navegador do aplicativo não iniciou por falha do sandbox; a conferência visual e os testes foram executados pelo Playwright no Edge instalado.
+- GitHub Pages configurado para workflow: https://cristianworth.github.io/weather-lab/.
+- `.github/workflows/pages.yml` verifica formatação, testes, build e cenários de navegador com respostas controladas; publica apenas após sucesso em pushes à `main`. Conferir o estado real no Actions e a revisão servida antes de afirmar que uma nova publicação terminou.
+- Build: `npm run build -- --base=/weather-lab/`. A prévia de produção também exige `--base=/weather-lab/`. `npm run test:pages` valida o build na porta 4180.
+- Capturas selecionadas em `docs/images/` são versionadas por autorização explícita. `npm run screenshots` atualiza a galeria com dados reais; use `WEATHER_LAB_URL` para selecionar a prévia. Resultados brutos continuam ignorados em `test-results/`.
 
-## Repositório e pendências
+## Evidências e próximos passos
 
-- Projeto: `D:/Repo/weather-lab`. Repositório próprio em `main`; `origin`: `https://github.com/cristianworth/weather-lab.git`. Autoria local com o noreply confirmado da conta `cristianworth`; configuração global preservada.
-- Primeira entrega registrada localmente. Não havia changelog nem regras de release; versão inicial 0.1.0, exibida a partir do `package.json`.
-- Prévia local: executar `npm run dev` e abrir o endereço informado. A versão desta sessão foi conferida em `http://127.0.0.1:5173/`.
-- A autorização atual inclui commit e push à `main`. Confirmar a sincronização pelas referências Git, sem confundir publicação do código com hospedagem da aplicação. Nenhuma hospedagem foi criada.
-- Próximo passo de produto: Cristian experimentar a interface e apontar ajustes relevantes. Não há pipeline de CI nem canal privado de segurança configurados nesta entrega; não prometer que existem.
-- Consultas meteorológicas precisam de internet; favoritos ficam apenas neste navegador. Reavaliar condições da Open-Meteo antes de publicação/uso promocional.
+- Redesign validado com 16 testes de domínio/componentes, quatro cenários Playwright/Edge, inspeção visual e axe nos estados exercitados; a suíte completa também passou no build de produção em `/weather-lab/`.
+- Marca conferida em 16, 32 e 64 px, fundos claro/escuro e layouts de 320, 390, 768 e 1280 px. Isso não equivale a auditoria completa de acessibilidade nem valida precisão meteorológica.
+- Repositório: `D:/Repo/weather-lab`, branch `main`, remoto `https://github.com/cristianworth/weather-lab.git`, autoria local com noreply da conta `cristianworth`. Verificar sincronização pelas referências Git.
+- Próximo passo de produto: experimentar a versão publicada e avaliar ajustes concretos. O relato privado de segurança ainda não foi configurado; não prometer esse canal. Consultas precisam de internet e estão sujeitas às condições da Open-Meteo.

@@ -84,7 +84,7 @@ SOFTWARE.
 
 ## Fontes
 
-DM Sans e Manrope são carregadas pelo Google Fonts, sem arquivos de fonte incorporados ao repositório. As famílias usam SIL Open Font License 1.1; consulte os avisos oficiais de [DM Sans](https://github.com/google/fonts/blob/main/ofl/dmsans/OFL.txt) e [Manrope](https://github.com/google/fonts/blob/main/ofl/manrope/OFL.txt). Se passar a distribuir as fontes localmente, preserve os avisos aplicáveis junto aos arquivos.
+Barlow e Barlow Condensed, de Jeremy Tribby, são carregadas pelo Google Fonts, sem arquivos de fonte incorporados ao repositório. As famílias usam SIL Open Font License 1.1; consulte os avisos oficiais de [Barlow](https://github.com/google/fonts/blob/main/ofl/barlow/OFL.txt) e [Barlow Condensed](https://github.com/google/fonts/blob/main/ofl/barlowcondensed/OFL.txt). Se passar a distribuir as fontes localmente, preserve os avisos aplicáveis junto aos arquivos. O símbolo Horizonte e a ilustração atmosférica foram desenhados em SVG como parte do código original do Weather Lab, sob a licença MIT do projeto.
 
 ## Dados e serviço meteorológico
 

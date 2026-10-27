@@ -36,6 +36,8 @@ A busca utiliza a API de geocoding da Open-Meteo, baseada em GeoNames. A aplica�
 
 ## Contratos e medidas
 
+Desde o redesign Horizonte, `BrandMark.tsx` compartilha o favicon SVG entre cabeçalho, rodapé e modal, e `SkyArt.tsx` desenha a ilustração atmosférica decorativa segundo a categoria meteorológica. A navegação é horizontal. A identidade e suas referências estão documentadas no README; os contratos da API permanecem os mesmos.
+
 `Location` representa o local escolhido. `Forecast` contém o fuso, o instante da consulta, condições atuais e coleções de `HourForecast` e `DayForecast`. O JSON externo é tratado como dado desconhecido e validado antes de alimentar a interface.
 
 Temperaturas são consultadas e mantidas em Celsius; Fahrenheit é uma conversão de apresentação. Chuva é `rain + showers`, em milímetros. Probabilidade de precipitação permanece separada, em porcentagem. Se um componente da soma está ausente, o resultado fica indisponível em vez de assumir zero.

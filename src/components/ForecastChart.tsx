@@ -89,7 +89,6 @@ export default function ForecastChart({
     <section className="panel chart-panel" aria-label="Previsão por hora">
       <div className="panel-heading chart-heading">
         <div>
-          <span className="eyebrow">UM OLHAR MAIS DE PERTO</span>
           <h2>Hora a hora</h2>
         </div>
         <div className="segmented-control" aria-label="Variável do gráfico">
@@ -172,8 +171,16 @@ export default function ForecastChart({
         >
           <defs>
             <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7eaa75" stopOpacity=".24" />
-              <stop offset="100%" stopColor="#7eaa75" stopOpacity=".015" />
+              <stop
+                offset="0%"
+                stopColor="var(--temperature)"
+                stopOpacity=".24"
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--temperature)"
+                stopOpacity=".015"
+              />
             </linearGradient>
           </defs>
           {[0, 1, 2, 3].map((index) => {

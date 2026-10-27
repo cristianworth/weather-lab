@@ -29,7 +29,7 @@ describe('weather dashboard', () => {
     render(<App />)
     await screen.findByRole('region', { name: 'Condições atuais' })
     expect(
-      screen.getByRole('heading', { name: /Seu tempo, em perspectiva/ }),
+      screen.getByRole('heading', { name: /O tempo, de perto/ }),
     ).toBeVisible()
     const current = screen.getByRole('region', { name: 'Condições atuais' })
     expect(within(current).getByText('24°')).toBeVisible()
@@ -69,7 +69,7 @@ describe('weather dashboard', () => {
     await user.click(
       screen.getByRole('button', { name: 'Remover São Paulo dos favoritos' }),
     )
-    expect(screen.getByText('Seus lugares, sempre por perto.')).toBeVisible()
+    expect(screen.getByText('Nenhuma cidade salva ainda')).toBeVisible()
   })
 
   it('recovers after a service failure without displaying invented weather', async () => {

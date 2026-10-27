@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:pages": "playwright test --config playwright.pages.config.ts",
+    "screenshots": "node scripts/capture-portfolio.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -46,5 +48,5 @@
   "bugs": {
     "url": "https://github.com/cristianworth/weather-lab/issues"
   },
-  "homepage": "https://github.com/cristianworth/weather-lab#readme"
+  "homepage": "https://cristianworth.github.io/weather-lab/"
 }

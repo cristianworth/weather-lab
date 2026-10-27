@@ -1,5 +1,9 @@
 # Weather Lab
 
+[![Checks and Pages](https://github.com/cristianworth/weather-lab/actions/workflows/pages.yml/badge.svg)](https://github.com/cristianworth/weather-lab/actions/workflows/pages.yml)
+
+**[Abrir a aplicação](https://cristianworth.github.io/weather-lab/)**
+
 **Seu tempo, em perspectiva.** Um painel de previsão do tempo para explorar condições atuais, temperatura e chuva por localidade.
 
 Projeto open source criado por [Cristian](https://github.com/cristianworth), com código sob a [licença MIT](LICENSE). A interface e a documentação principal estão em português do Brasil.
@@ -14,7 +18,27 @@ O projeto também registra uma experiência de desenvolvimento com auxílio de I
 
 ## Estado do projeto
 
-Versão inicial **0.1.0**, com aplicação funcional, testes e build de produção. O repositório permite execução local e geração de arquivos estáticos; não há demonstração hospedada oficial nesta entrega.
+Versão inicial **0.1.0**, com aplicação funcional, testes e build de produção. A aplicação é publicada no [GitHub Pages](https://cristianworth.github.io/weather-lab/) por um workflow que valida a entrega antes do deploy.
+
+## Amostras para portfólio
+
+Capturas reais da versão de produção em 27/10/2026, usando a localidade inicial São Paulo. Os valores meteorológicos mudam com o tempo; as imagens registram a interface naquele momento.
+
+![Weather Lab em desktop: identidade Horizonte, condições atuais, previsão semanal e gráficos horários.](docs/images/desktop.png)
+
+<details>
+<summary>Ver a interface em celular e no modo escuro</summary>
+
+<p>
+  <img src="docs/images/mobile.png" width="260" alt="Painel do Weather Lab em um celular, com navegação horizontal e previsão em faixa." />
+  <img src="docs/images/dark-mode.png" width="260" alt="Weather Lab no modo escuro azul, com as mesmas informações e controles." />
+</p>
+
+</details>
+
+![Estudo do símbolo Horizonte em 16, 32 e 64 pixels sobre fundos claro e escuro.](docs/images/brand-mark.png)
+
+As imagens selecionadas em `docs/images/` são versionadas para apresentação do projeto. Resultados brutos continuam em `test-results/`, ignorados pelo Git. Para atualizar a galeria, execute uma prévia e use `npm run screenshots`; o endereço pode ser definido por `WEATHER_LAB_URL`, conforme o [guia de contribuição](CONTRIBUTING.md).
 
 ## Recursos
 
@@ -28,6 +52,51 @@ Versão inicial **0.1.0**, com aplicação funcional, testes e build de produç�
 - Persistência local de cidade, favoritos e preferências; estados de carregamento, erro e nova tentativa.
 
 Dados reais da [Open-Meteo](https://open-meteo.com/), localidades baseadas no [GeoNames](https://www.geonames.org/) e atribuição [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). A cidade inicial é São Paulo e pode ser alterada na busca; não representa a localização inferida do visitante.
+
+## Identidade visual: Horizonte
+
+<img src="public/favicon.svg" width="80" height="80" alt="Símbolo Horizonte: sol âmbar e duas linhas curvas claras sobre um círculo azul atlântico." />
+
+Em 27/10/2026, a interface foi redesenhada para aproximar sua identidade do tema meteorológico e melhorar a leitura dos dados. A direção **Horizonte** combina uma janela azul para o tempo atual, uma faixa contínua de previsão e gráficos com cores próprias para temperatura e chuva.
+
+### Problema e decisões
+
+| Antes                                                        | Redesign                                                      | Intenção                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| Monograma “W” dentro de um quadrado arredondado              | Símbolo vetorial original com sol e duas linhas de horizonte  | Criar uma marca reconhecível na aba e no cabeçalho           |
+| Barra lateral permanente e cartões semelhantes               | Navegação horizontal, painel atual dominante e faixa semanal  | Dar mais espaço à previsão e distinguir níveis de informação |
+| Superfícies neutras e verde discreto                         | Azul atlântico, cobalto, céu e âmbar                          | Vincular a identidade ao céu e separar funções visuais       |
+| DM Sans/Manrope e rótulos pequenos                           | Barlow para leitura e Barlow Condensed para títulos e números | Aumentar a presença tipográfica com uma hierarquia legível   |
+| Chamadas decorativas, letras maiúsculas e metáforas em erros | Textos diretos em sentence case                               | Explicar dados, estados e ações com clareza                  |
+
+### Paleta e tipografia
+
+| Token     | Hex       | Papel                                         |
+| --------- | --------- | --------------------------------------------- |
+| Atlântico | `#16445C` | Cabeçalho, marca e dia selecionado            |
+| Cobalto   | `#2459BE` | Condições atuais, ações e chuva no tema claro |
+| Céu       | `#C6E5F1` | Superfícies secundárias e contraste da marca  |
+| Âmbar     | `#F5B841` | Sol e indicador da seleção semanal            |
+| Gelo      | `#EAF5F9` | Fundo do tema claro                           |
+| Tinta     | `#132B3A` | Texto principal                               |
+
+O modo escuro usa fundos azuis profundos e cores de texto ajustadas. Cores funcionais adicionais, como o âmbar escuro da curva de temperatura, são derivadas para preservar contraste sobre superfícies claras. A seleção do dia usa também marcador e estado acessível; quantidade e probabilidade mantêm rótulos e unidades.
+
+A família Barlow, de Jeremy Tribby, oferece larguras relacionadas e uma linguagem de sinalização adequada à leitura de informação. A escolha de Barlow Condensed nos títulos e números dá personalidade ao painel sem recorrer a outra família sem relação. A escala vai de 12–16 px nos detalhes a 27–52 px nos títulos e cerca de 106–110 px na temperatura principal, com ajustes por largura de tela. Textos explicativos têm largura de leitura limitada.
+
+### Marca e ilustração
+
+O [favicon SVG](public/favicon.svg) é o arquivo canônico da marca; o componente `BrandMark` reutiliza o mesmo recurso no cabeçalho, rodapé e modal. O desenho usa círculo, disco solar e duas curvas abertas, com poucos elementos para manter a silhueta em 16, 32 e 64 pixels. A URL versionada do favicon permite atualizar a identidade na aba.
+
+A ilustração das condições atuais também é SVG próprio. Sol/lua, nuvens e precipitação acompanham a categoria meteorológica. As linhas curvas se inspiram na linguagem dos mapas atmosféricos, mas são composição de marca: não representam pressão medida, trajetórias de vento nem uma escala meteorológica. A informação quantitativa fica nos dados e nos gráficos.
+
+### Fontes e referências de design
+
+- [NOAA — Surface Weather Plots](https://www.noaa.gov/jetstream/wxmaps-max): referência conceitual de síntese visual e organização de informação meteorológica. Os desenhos do projeto são originais.
+- [Barlow, projeto de Jeremy Tribby](https://github.com/jpt/barlow): origem e características da família tipográfica. Licenças oficiais de [Barlow](https://github.com/google/fonts/blob/main/ofl/barlow/OFL.txt) e [Barlow Condensed](https://github.com/google/fonts/blob/main/ofl/barlowcondensed/OFL.txt), sob SIL OFL 1.1.
+- [W3C — contraste de texto](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) e [contraste não textual](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html): referências para leitura, controles, indicadores e gráficos. A análise automatizada é complementada por conferência visual, sem alegação de certificação.
+
+Para reproduzir a apresentação, execute o aplicativo e os testes de navegador. Eles geram capturas em `test-results/`, fora do histórico, incluindo estudos do símbolo em fundos claro/escuro. Os fluxos de busca, favoritos, unidades, seleção de dias e persistência foram preservados no redesign.
 
 ## Executar
 
@@ -44,16 +113,18 @@ Abra o endereço local informado pelo Vite, normalmente `http://127.0.0.1:5173/`
 
 ## Comandos
 
-| Comando                | Finalidade                                        |
-| ---------------------- | ------------------------------------------------- |
-| `npm run dev`          | Iniciar o servidor de desenvolvimento             |
-| `npm test`             | Executar os testes de domínio e componentes       |
-| `npm run test:watch`   | Acompanhar testes durante o desenvolvimento       |
-| `npm run test:e2e`     | Executar cenários de navegador com Playwright     |
-| `npm run build`        | Verificar os tipos e gerar a aplicação em `dist/` |
-| `npm run preview`      | Servir localmente o build já gerado               |
-| `npm run format`       | Formatar código e documentação                    |
-| `npm run format:check` | Verificar a formatação sem modificar arquivos     |
+| Comando                | Finalidade                                          |
+| ---------------------- | --------------------------------------------------- |
+| `npm run dev`          | Iniciar o servidor de desenvolvimento               |
+| `npm test`             | Executar os testes de domínio e componentes         |
+| `npm run test:watch`   | Acompanhar testes durante o desenvolvimento         |
+| `npm run test:e2e`     | Executar cenários de navegador com Playwright       |
+| `npm run test:pages`   | Verificar o build em `/weather-lab/`                |
+| `npm run screenshots`  | Atualizar as capturas selecionadas para o portfólio |
+| `npm run build`        | Verificar os tipos e gerar a aplicação em `dist/`   |
+| `npm run preview`      | Servir localmente o build já gerado                 |
+| `npm run format`       | Formatar código e documentação                      |
+| `npm run format:check` | Verificar a formatação sem modificar arquivos       |
 
 Para conferir uma alteração:
 
@@ -69,13 +140,34 @@ Para os testes de navegador, no Windows com Microsoft Edge instalado:
 npm run test:e2e
 ```
 
-O Playwright inicia a aplicação na porta 5173 ou reutiliza uma prévia existente fora de CI. Os cenários de integração consultam a API real; o cenário de recuperação usa uma resposta controlada. A configuração de Chromium em outros ambientes e a conferência prática estão no [guia de contribuição](CONTRIBUTING.md). Capturas e traces ficam em `test-results/`, fora do Git.
+O Playwright inicia a aplicação na porta 4178 ou reutiliza uma prévia existente fora de CI. A suíte de produção usa a porta 4180 e o subcaminho `/weather-lab/`. Os cenários de integração consultam a API real; o cenário de recuperação usa uma resposta controlada. A configuração de Chromium em outros ambientes e a conferência prática estão no [guia de contribuição](CONTRIBUTING.md). Capturas e traces ficam em `test-results/`, fora do Git.
+
+## Publicação e checks
+
+O workflow [Checks and Pages](.github/workflows/pages.yml) roda em pushes e pull requests para `main`. Ele instala as dependências, confere a formatação, executa os testes, gera o build com `--base=/weather-lab/` e verifica no Chromium os cenários de recuperação e marca com respostas controladas. A suíte completa com API real também pode ser executada localmente.
+
+Quando essas verificações passam em um push para `main`, o job de deploy publica o artefato no GitHub Pages. Pull requests executam as verificações sem publicar. As actions oficiais estão fixadas por SHA. O badge acima mostra o resultado real do workflow.
+
+Para conferir o mesmo build localmente:
+
+```sh
+npm run build -- --base=/weather-lab/
+npm run test:pages
+```
+
+Para abrir a versão de produção com uma prévia manual:
+
+```sh
+npm run preview -- --base=/weather-lab/
+```
+
+Use o endereço com `/weather-lab/` impresso pelo Vite. Referências: [Vite e GitHub Pages](https://vite.dev/guide/static-deploy.html#github-pages) e [workflows de GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 ## Tecnologias e qualidade
 
 React, TypeScript, Vite, CSS e gráficos SVG. Vitest e Testing Library verificam domínio e interface; Playwright e axe verificam os fluxos no navegador e critérios automatizáveis de acessibilidade. As versões exatas estão no lockfile.
 
-A aplicação consulta a API diretamente e não precisa de backend ou banco de dados para o escopo atual. Preferências ficam no navegador; não há sincronização entre dispositivos. As fontes DM Sans e Manrope são carregadas pelo Google Fonts, com fallback local.
+A aplicação consulta a API diretamente e não precisa de backend ou banco de dados para o escopo atual. Preferências ficam no navegador; não há sincronização entre dispositivos. Barlow e Barlow Condensed são carregadas pelo Google Fonts, com fallback local.
 
 O [guia de arquitetura](docs/architecture.md) descreve contratos e fluxo de dados. O [documento de privacidade](docs/privacy.md) explica armazenamento e requisições a terceiros.
 

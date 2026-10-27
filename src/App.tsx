@@ -1,30 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   ArrowDown,
-  ArrowRight,
   ArrowUp,
-  ArrowUpRight,
   Bookmark,
   Check,
-  ChevronRight,
   CircleHelp,
   CloudOff,
-  Compass,
   Droplets,
-  ExternalLink,
-  LayoutDashboard,
   LoaderCircle,
   LocateFixed,
   MapPin,
   Moon,
   RefreshCw,
-  Sparkles,
   Sun,
   Sunrise,
   Sunset,
   Wind,
   X,
 } from 'lucide-react'
+import BrandMark from './components/BrandMark'
+import SkyArt from './components/SkyArt'
 import ForecastChart, { type Metric } from './components/ForecastChart'
 import LocationSearch from './components/LocationSearch'
 import WeatherIcon from './components/WeatherIcon'
@@ -227,128 +222,37 @@ export default function App() {
       <a href="#main" className="skip-link">
         Ir para o conteúdo
       </a>
-      <aside className="sidebar">
-        <a
-          className="brand"
-          href="#main"
-          aria-label="Weather Lab, início"
-          onClick={() => setView('overview')}
-        >
-          <span className="brand-mark">
-            w<span>·</span>
-          </span>
-          <span>
-            weather<span className="brand-light">lab</span>
-            <small>UM NOVO OLHAR PARA O TEMPO</small>
-          </span>
-        </a>
-        <span className="nav-label">SEU ESPAÇO</span>
-        <nav aria-label="Navegação principal">
-          <button
-            className={view === 'overview' ? 'nav-item active' : 'nav-item'}
-            aria-current={view === 'overview' ? 'page' : undefined}
+      <header className="masthead">
+        <div className="masthead-inner">
+          <a
+            className="brand"
+            href="#main"
+            aria-label="Weather Lab, início"
             onClick={() => setView('overview')}
           >
-            <LayoutDashboard size={19} />
-            <span>Visão geral</span>
-            <ChevronRight size={16} />
-          </button>
-          <button
-            className={view === 'favorites' ? 'nav-item active' : 'nav-item'}
-            aria-current={view === 'favorites' ? 'page' : undefined}
-            onClick={() => setView('favorites')}
-          >
-            <Bookmark size={19} />
-            <span>Favoritos</span>
-            <span className="nav-count">{favorites.length}</span>
-          </button>
-        </nav>
-        <div className="sidebar-locations">
-          <span className="nav-label">POR PERTO DE VOCÊ</span>
-          <button
-            className="sidebar-location"
-            onClick={() => setView('overview')}
-          >
-            <span className="location-dot" />
+            <BrandMark />
             <span>
-              {location.name}
-              <small>{location.country || 'Localização do dispositivo'}</small>
+              Weather Lab<small>Previsão para o seu dia</small>
             </span>
-            <ArrowUpRight size={15} />
-          </button>
-          {favorites
-            .filter((item) => locationKey(item) !== locationKey(location))
-            .slice(0, 4)
-            .map((item) => (
-              <button
-                className="sidebar-location"
-                key={locationKey(item)}
-                onClick={() => selectLocation(item)}
-              >
-                <MapPin size={14} />
-                <span>
-                  {item.name}
-                  <small>{item.country || item.region}</small>
-                </span>
-                <ArrowUpRight size={15} />
-              </button>
-            ))}
-        </div>
-        <div className="sidebar-bottom">
-          <div className="sidebar-note">
-            <span className="mini-sun">
-              <Sun size={23} />
-            </span>
-            <strong>O dia tem possibilidades.</strong>
-            <p>
-              Uma boa previsão ajuda
-              <br />
-              você a explorar cada uma.
-            </p>
-            <span className="note-line" />
-          </div>
-          <button
-            className="nav-item"
-            aria-label={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
-            onClick={() =>
-              setTheme((value) => (value === 'light' ? 'dark' : 'light'))
-            }
-          >
-            <Moon size={18} />
-            <span>{theme === 'light' ? 'Modo escuro' : 'Modo claro'}</span>
-            <span className={`theme-switch ${theme}`} />
-          </button>
-          <button
-            ref={aboutButton}
-            aria-label="Sobre o Weather Lab"
-            className="nav-item about-button"
-            onClick={() => setAbout(true)}
-          >
-            <CircleHelp size={18} />
-            <span>Sobre o Weather Lab</span>
-            <ExternalLink size={13} />
-          </button>
-          <small className="sidebar-version">
-            FEITO PARA OLHAR ALÉM DA JANELA
-          </small>
-        </div>
-      </aside>
-
-      <div className="app-body">
-        <header className="topbar">
-          <div className="breadcrumb">
-            Seu espaço <ChevronRight size={13} />
-            <strong>{view === 'overview' ? 'Visão geral' : 'Favoritos'}</strong>
-          </div>
-          <div className="topbar-actions">
-            <span className="live-indicator">
-              <i />
-              {loading
-                ? 'Consultando previsão'
-                : error
-                  ? 'Previsão indisponível'
-                  : 'Previsão atualizada'}
-            </span>
+          </a>
+          <nav aria-label="Navegação principal">
+            <button
+              className={view === 'overview' ? 'nav-item active' : 'nav-item'}
+              aria-current={view === 'overview' ? 'page' : undefined}
+              onClick={() => setView('overview')}
+            >
+              Previsão
+            </button>
+            <button
+              className={view === 'favorites' ? 'nav-item active' : 'nav-item'}
+              aria-current={view === 'favorites' ? 'page' : undefined}
+              onClick={() => setView('favorites')}
+            >
+              <Bookmark size={17} />
+              Favoritos<span className="nav-count">{favorites.length}</span>
+            </button>
+          </nav>
+          <div className="masthead-tools">
             <div className="unit-toggle" aria-label="Unidade de temperatura">
               <button
                 aria-pressed={unit === 'celsius'}
@@ -363,580 +267,507 @@ export default function App() {
                 °F
               </button>
             </div>
-            <span className="profile-badge" title="Weather Lab">
-              <Compass size={19} />
-            </span>
-          </div>
-        </header>
-        <main id="main" tabIndex={-1}>
-          <div className="page-heading">
-            <div>
-              <span className="eyebrow">
-                MENOS SURPRESAS. MAIS POSSIBILIDADES.
-              </span>
-              <h1>
-                {view === 'overview' ? (
-                  <>
-                    Seu tempo, em perspectiva<span>.</span>
-                  </>
-                ) : (
-                  <>
-                    Seus lugares favoritos<span>.</span>
-                  </>
-                )}
-              </h1>
-              <p>
-                {view === 'overview'
-                  ? 'Entenda o céu lá fora. Aproveite melhor o dia aqui dentro.'
-                  : 'Uma coleção de lugares que fazem parte dos seus dias.'}
-              </p>
-            </div>
-            <span className="heading-date">
-              <span className="date-dot" />
-              {displayDate}
-            </span>
-          </div>
-          <div className="search-row">
-            <LocationSearch onSelect={selectLocation} />
             <button
-              className="location-button"
-              aria-label={locating ? 'Localizando…' : 'Usar minha localização'}
-              onClick={locate}
-              disabled={locating}
+              className="icon-button theme-button"
+              aria-label={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+              title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+              onClick={() =>
+                setTheme((value) => (value === 'light' ? 'dark' : 'light'))
+              }
             >
-              {locating ? (
-                <LoaderCircle size={17} className="spin" />
-              ) : (
-                <LocateFixed size={17} />
-              )}
-              <span>
-                {locating ? 'Localizando…' : 'Usar minha localização'}
-              </span>
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+            </button>
+            <button
+              ref={aboutButton}
+              className="icon-button"
+              aria-label="Sobre o Weather Lab"
+              title="Sobre o Weather Lab"
+              onClick={() => setAbout(true)}
+            >
+              <CircleHelp size={20} />
             </button>
           </div>
-
-          {view === 'favorites' ? (
-            <section
-              className="favorites-section"
-              aria-label="Localidades favoritas"
-            >
-              <div className="section-heading">
-                <h2>
-                  Seus favoritos{' '}
-                  <span className="inline-count">{favorites.length}</span>
-                </h2>
-                <span>Salvos neste navegador</span>
-              </div>
-              {favorites.length ? (
-                <div className="favorite-grid">
-                  {favorites.map((item) => (
-                    <article
-                      className="panel favorite-card"
-                      key={locationKey(item)}
-                    >
-                      <div className="favorite-card-top">
-                        <span className="favorite-location-icon">
-                          <MapPin size={22} />
-                        </span>
-                        <button
-                          className="icon-button"
-                          aria-label={`Remover ${item.name} dos favoritos`}
-                          onClick={() => {
-                            setFavorites((items) =>
-                              items.filter(
-                                (favorite) =>
-                                  locationKey(favorite) !== locationKey(item),
-                              ),
-                            )
-                            setNotice(`${item.name} removida dos favoritos.`)
-                          }}
-                        >
-                          <X size={17} />
-                        </button>
-                      </div>
-                      <h3>{item.name}</h3>
-                      <p>
-                        {[item.region, item.country]
-                          .filter(Boolean)
-                          .join(', ') || 'Localização do dispositivo'}
-                      </p>
+        </div>
+      </header>
+      <main id="main" tabIndex={-1}>
+        <div className="page-heading">
+          <div>
+            <h1>
+              {view === 'overview'
+                ? 'O tempo, de perto.'
+                : 'Lugares para acompanhar.'}
+            </h1>
+            <p>
+              {view === 'overview'
+                ? 'Temperatura e chuva, de agora até os próximos sete dias.'
+                : 'As cidades que você salvou, reunidas em um lugar.'}
+            </p>
+          </div>
+          <span className="heading-date">{displayDate}</span>
+        </div>
+        <div className="search-row">
+          <LocationSearch onSelect={selectLocation} />
+          <button
+            className="location-button"
+            aria-label={locating ? 'Localizando…' : 'Usar minha localização'}
+            disabled={locating}
+            onClick={locate}
+          >
+            {locating ? (
+              <LoaderCircle size={19} className="spin" />
+            ) : (
+              <LocateFixed size={19} />
+            )}
+            <span>{locating ? 'Localizando…' : 'Usar minha localização'}</span>
+          </button>
+        </div>
+        {view === 'favorites' ? (
+          <section
+            className="favorites-section"
+            aria-label="Localidades favoritas"
+          >
+            <div className="section-heading">
+              <h2>
+                Seus favoritos{' '}
+                <span className="inline-count">{favorites.length}</span>
+              </h2>
+              <span>Salvos neste navegador</span>
+            </div>
+            {favorites.length ? (
+              <div className="favorite-grid">
+                {favorites.map((item) => (
+                  <article className="favorite-card" key={locationKey(item)}>
+                    <div className="favorite-card-top">
+                      <MapPin size={25} />
                       <button
-                        className="text-button"
-                        onClick={() => selectLocation(item)}
+                        className="icon-button"
+                        aria-label={`Remover ${item.name} dos favoritos`}
+                        onClick={() => {
+                          setFavorites((items) =>
+                            items.filter(
+                              (favorite) =>
+                                locationKey(favorite) !== locationKey(item),
+                            ),
+                          )
+                          setNotice(`${item.name} removida dos favoritos.`)
+                        }}
                       >
-                        Explorar previsão <ArrowRight size={16} />
+                        <X size={19} />
                       </button>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <div className="panel empty-state">
-                  <span className="empty-icon">
-                    <Bookmark size={30} />
-                  </span>
-                  <h2>Seus lugares, sempre por perto.</h2>
-                  <p>
-                    Busque uma cidade e toque em “Salvar local” para encontrá-la
-                    aqui na próxima visita.
-                  </p>
-                  <button
-                    className="primary-button"
-                    onClick={() => setView('overview')}
-                  >
-                    Explorar uma cidade <ArrowRight size={16} />
-                  </button>
-                </div>
-              )}
-            </section>
-          ) : (
-            <>
-              <div className="location-heading">
-                <div>
-                  <MapPin size={19} />
-                  <h2>
-                    {location.name}
-                    <span>
-                      {location.countryCode ? `, ${location.countryCode}` : ''}
-                    </span>
-                  </h2>
-                  <span className="location-region">
-                    {location.region && location.region !== location.name
-                      ? location.region
-                      : location.country}
-                  </span>
-                </div>
-                <div>
-                  <button
-                    className="icon-button refresh-button"
-                    aria-label="Atualizar previsão"
-                    title="Atualizar previsão"
-                    disabled={loading}
-                    onClick={() => setRevision((value) => value + 1)}
-                  >
-                    <RefreshCw size={16} className={loading ? 'spin' : ''} />
-                  </button>
-                  <button
-                    className={`save-button ${saved ? 'saved' : ''}`}
-                    aria-pressed={saved}
-                    onClick={toggleFavorite}
-                  >
-                    {saved ? <Check size={15} /> : <Bookmark size={15} />}
-                    {saved ? 'Local salvo' : 'Salvar local'}
-                  </button>
-                </div>
-              </div>
-
-              {loading ? (
-                <div
-                  className="loading-dashboard"
-                  role="status"
-                  aria-label="Carregando previsão"
-                >
-                  <div className="skeleton hero-skeleton" />
-                  <div className="skeleton days-skeleton" />
-                  <div className="skeleton graph-skeleton" />
-                  <span className="loading-label">
-                    <LoaderCircle size={17} className="spin" /> Consultando o
-                    céu de {location.name}…
-                  </span>
-                </div>
-              ) : error || !data || !today || !selectedDay ? (
-                <section className="panel error-state" role="alert">
-                  <span className="empty-icon">
-                    <CloudOff size={34} />
-                  </span>
-                  <h2>O céu está um pouco distante.</h2>
-                  <p>
-                    {error ||
-                      'Não há previsão disponível para esta localidade.'}
-                  </p>
-                  <button
-                    className="primary-button"
-                    onClick={() => setRevision((value) => value + 1)}
-                  >
-                    <RefreshCw size={16} /> Tentar novamente
-                  </button>
-                  <small>Você também pode buscar outra cidade acima.</small>
-                </section>
-              ) : (
-                <>
-                  <section
-                    className="current-grid"
-                    aria-label="Condições atuais"
-                  >
-                    <article
-                      className={`current-card ${data.current.isDay ? '' : 'night'}`}
-                    >
-                      <div className="sky-art" aria-hidden="true">
-                        <div className="sky-sun" />
-                        <div className="sky-cloud cloud-one" />
-                        <div className="sky-cloud cloud-two" />
-                        <div className="sky-hill hill-back" />
-                        <div className="sky-hill hill-front" />
-                      </div>
-                      <div className="current-top">
-                        <span className="current-label">
-                          <i /> AGORA EM{' '}
-                          {location.name.toLocaleUpperCase('pt-BR')}
-                        </span>
-                        <span className="current-time">
-                          {localTime(data.current.time, data.timezone)}
-                        </span>
-                      </div>
-                      <div className="current-main">
-                        <div className="current-temperature">
-                          {temperature(data.current.temperature, unit)}
-                          <span>{unit === 'celsius' ? 'C' : 'F'}</span>
-                        </div>
-                        <div className="current-condition">
-                          <WeatherIcon
-                            code={data.current.code}
-                            isDay={data.current.isDay}
-                            size={25}
-                          />
-                          <span>{currentDescription}</span>
-                        </div>
-                        <p>
-                          Sensação térmica de{' '}
-                          {temperature(data.current.apparent, unit)}
-                        </p>
-                      </div>
-                      <div className="current-bottom">
-                        <span>
-                          <ArrowUp size={14} />
-                          {temperature(today.max, unit)}
-                          <span className="current-divider" />
-                          <ArrowDown size={14} />
-                          {temperature(today.min, unit)}
-                        </span>
-                        <span>
-                          Hoje <ArrowUpRight size={14} />
-                        </span>
-                      </div>
-                    </article>
-                    <div className="metrics-grid">
-                      <article className="panel metric-card">
-                        <div className="metric-label">
-                          <span>Chuva hoje</span>
-                          <span className="metric-icon blue">
-                            <Droplets size={18} />
-                          </span>
-                        </div>
-                        <div className="metric-value">
-                          {decimal(today.rain)}
-                          <span>mm</span>
-                        </div>
-                        <p>Acumulado previsto para o dia</p>
-                        <div className="mini-rain" aria-hidden="true">
-                          {hoursForDay(data, today.date)
-                            .filter((_, i) => i % 2 === 0)
-                            .map((hour) => (
-                              <i
-                                key={hour.time}
-                                style={{
-                                  height: `${hour.rain === null ? 3 : Math.min(30, 3 + hour.rain * 9)}px`,
-                                }}
-                              />
-                            ))}
-                        </div>
-                      </article>
-                      <article className="panel metric-card">
-                        <div className="metric-label">
-                          <span>Probabilidade</span>
-                          <span className="metric-icon blue">
-                            <CloudRainIcon />
-                          </span>
-                        </div>
-                        <div className="metric-value">
-                          {decimal(today.probability)}
-                          <span>%</span>
-                        </div>
-                        <p>Máxima de precipitação hoje</p>
-                        <div className="metric-track">
-                          <i
-                            style={{
-                              width: `${Math.min(100, Math.max(0, today.probability ?? 0))}%`,
-                            }}
-                          />
-                        </div>
-                      </article>
-                      <article className="panel metric-card">
-                        <div className="metric-label">
-                          <span>Vento agora</span>
-                          <span className="metric-icon green">
-                            <Wind size={18} />
-                          </span>
-                        </div>
-                        <div className="metric-value">
-                          {decimal(data.current.wind)}
-                          <span>km/h</span>
-                        </div>
-                        <p>Velocidade a 10 m do solo</p>
-                      </article>
-                      <article className="panel metric-card">
-                        <div className="metric-label">
-                          <span>Umidade agora</span>
-                          <span className="metric-icon purple">
-                            <Droplets size={18} />
-                          </span>
-                        </div>
-                        <div className="metric-value">
-                          {decimal(data.current.humidity)}
-                          <span>%</span>
-                        </div>
-                        <p>Umidade relativa do ar</p>
-                      </article>
                     </div>
-                  </section>
-
-                  <section
-                    className="week-section"
-                    aria-label="Previsão para sete dias"
-                  >
-                    <div className="section-heading">
-                      <h2>
-                        Os próximos dias<span className="section-dot">.</span>
-                      </h2>
-                      <span>
-                        Selecione um dia para explorar <ArrowDown size={13} />
-                      </span>
-                    </div>
-                    <div className="week-grid">
-                      {data.days.map((day, index) => (
-                        <button
-                          className={`day-card ${day.date === selectedDay.date ? 'selected' : ''}`}
-                          key={day.date}
-                          aria-pressed={day.date === selectedDay.date}
-                          aria-label={`${dayLabel(day, data.timezone, index)}, ${weatherDescription(day.code).label}, máxima ${temperature(day.max, unit)}, mínima ${temperature(day.min, unit)}`}
-                          onClick={() => setSelectedDate(day.date)}
-                        >
-                          <span className="day-name">
-                            {dayLabel(day, data.timezone, index)}
-                          </span>
-                          <span className="day-date">
-                            {new Intl.DateTimeFormat('pt-BR', {
-                              timeZone: data.timezone,
-                              day: '2-digit',
-                              month: '2-digit',
-                            }).format(new Date(day.time * 1000))}
-                          </span>
-                          <WeatherIcon code={day.code} size={34} />
-                          <span className="day-temperatures">
-                            <strong>{temperature(day.max, unit)}</strong>
-                            <span>{temperature(day.min, unit)}</span>
-                          </span>
-                          <span className="day-rain">
-                            <Droplets size={12} />
-                            {decimal(day.rain, ' mm')}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-
-                  <div className="detail-grid">
-                    <div className="forecast-column">
-                      <div className="selected-day-label">
-                        <span>
-                          {dayLabel(
-                            selectedDay,
-                            data.timezone,
-                            data.days.indexOf(selectedDay),
-                          )}
-                        </span>
-                        <span>
-                          {new Intl.DateTimeFormat('pt-BR', {
-                            timeZone: data.timezone,
-                            day: 'numeric',
-                            month: 'long',
-                          }).format(new Date(selectedDay.time * 1000))}
-                        </span>
-                      </div>
-                      <ForecastChart
-                        key={selectedDay.date}
-                        hours={selectedHours}
-                        timezone={data.timezone}
-                        unit={unit}
-                        metric={metric}
-                        onMetricChange={setMetric}
-                      />
-                    </div>
-                    <aside className="panel daylight-panel">
-                      <div className="panel-heading">
-                        <div>
-                          <span className="eyebrow">
-                            DO PRIMEIRO AO ÚLTIMO RAIO
-                          </span>
-                          <h2>O ritmo do sol</h2>
-                        </div>
-                        <Sun size={20} className="sun-color" />
-                      </div>
-                      <div className="sun-arc" aria-hidden="true">
-                        <svg viewBox="0 0 260 122">
-                          <path
-                            d="M20 108 A110 90 0 0 1 240 108"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeDasharray="4 5"
-                          />
-                          <path
-                            d="M20 108 A110 90 0 0 1 130 18"
-                            fill="none"
-                            stroke="#d9ae56"
-                            strokeWidth="3"
-                          />
-                          <circle cx="130" cy="18" r="12" fill="#efbc57" />
-                          <line
-                            x1="12"
-                            x2="248"
-                            y1="108"
-                            y2="108"
-                            stroke="currentColor"
-                            strokeWidth="1"
-                          />
-                        </svg>
-                      </div>
-                      <div className="sun-times">
-                        <div>
-                          <Sunrise size={18} />
-                          <span>Nascer do sol</span>
-                          <strong>
-                            {selectedDay.sunrise === null
-                              ? '—'
-                              : localTime(selectedDay.sunrise, data.timezone)}
-                          </strong>
-                        </div>
-                        <div>
-                          <Sunset size={18} />
-                          <span>Pôr do sol</span>
-                          <strong>
-                            {selectedDay.sunset === null
-                              ? '—'
-                              : localTime(selectedDay.sunset, data.timezone)}
-                          </strong>
-                        </div>
-                      </div>
-                      <div className="uv-row">
-                        <span>Índice UV máximo</span>
-                        <strong>
-                          {decimal(selectedDay.uv)}
-                          <span
-                            className={`uv-dot ${selectedDay.uv !== null && selectedDay.uv >= 6 ? 'high' : ''}`}
-                          />
-                        </strong>
-                      </div>
-                    </aside>
-                  </div>
-
-                  <section className="hourly-section">
-                    <div className="section-heading">
-                      <h2>
-                        Ao longo do dia<span className="section-dot">.</span>
-                      </h2>
-                      <span>Uma previsão para cada momento</span>
-                    </div>
-                    <div
-                      className="hourly-grid"
-                      role="region"
-                      aria-label="Resumo horário com rolagem"
-                      tabIndex={0}
-                    >
-                      {selectedHours
-                        .filter((_, i) => i % 3 === 0)
-                        .map((hour) => (
-                          <article className="hour-card" key={hour.time}>
-                            <span>{localTime(hour.time, data.timezone)}</span>
-                            <WeatherIcon
-                              code={hour.code}
-                              isDay={
-                                selectedDay.sunrise !== null &&
-                                selectedDay.sunset !== null
-                                  ? hour.time >= selectedDay.sunrise &&
-                                    hour.time < selectedDay.sunset
-                                  : true
-                              }
-                              size={27}
-                            />
-                            <strong>
-                              {temperature(hour.temperature, unit)}
-                            </strong>
-                            <small>
-                              <Droplets size={11} />
-                              {decimal(hour.rain, ' mm')}
-                            </small>
-                            <span className="hour-probability">
-                              {decimal(hour.probability, '%')} prob.
-                            </span>
-                          </article>
-                        ))}
-                    </div>
-                  </section>
-                  <div className="forecast-note">
-                    <Sparkles size={16} />
+                    <h3>{item.name}</h3>
                     <p>
-                      A previsão muda, seus planos podem acompanhar. Atualizada
-                      às{' '}
-                      <strong>
-                        {localTime(data.fetchedAt / 1000, data.timezone)}
-                      </strong>
-                      , no fuso <strong>{data.timezone}</strong>.
+                      {[item.region, item.country].filter(Boolean).join(', ') ||
+                        'Localização do dispositivo'}
                     </p>
                     <button
                       className="text-button"
-                      onClick={() => setRevision((value) => value + 1)}
+                      onClick={() => selectLocation(item)}
                     >
-                      Atualizar <RefreshCw size={13} />
+                      Abrir previsão
                     </button>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <Bookmark size={36} />
+                <h2>Nenhuma cidade salva ainda</h2>
+                <p>
+                  Busque uma cidade e selecione “Salvar local” para acompanhar a
+                  previsão por aqui.
+                </p>
+                <button
+                  className="primary-button"
+                  onClick={() => setView('overview')}
+                >
+                  Buscar uma cidade
+                </button>
+              </div>
+            )}
+          </section>
+        ) : (
+          <>
+            <div className="location-heading">
+              <div>
+                <MapPin size={22} />
+                <h2>
+                  {location.name}
+                  <span>
+                    {location.countryCode ? `, ${location.countryCode}` : ''}
+                  </span>
+                </h2>
+                <span className="location-region">
+                  {location.region && location.region !== location.name
+                    ? location.region
+                    : location.country}
+                </span>
+              </div>
+              <div>
+                <button
+                  className="icon-button refresh-button"
+                  aria-label="Atualizar previsão"
+                  title="Atualizar previsão"
+                  disabled={loading}
+                  onClick={() => setRevision((value) => value + 1)}
+                >
+                  <RefreshCw size={18} className={loading ? 'spin' : ''} />
+                </button>
+                <button
+                  className={`save-button ${saved ? 'saved' : ''}`}
+                  aria-pressed={saved}
+                  onClick={toggleFavorite}
+                >
+                  {saved ? <Check size={17} /> : <Bookmark size={17} />}
+                  {saved ? 'Local salvo' : 'Salvar local'}
+                </button>
+              </div>
+            </div>
+            {loading ? (
+              <div
+                className="loading-dashboard"
+                role="status"
+                aria-label="Carregando previsão"
+              >
+                <div className="skeleton hero-skeleton" />
+                <div className="skeleton days-skeleton" />
+                <div className="skeleton graph-skeleton" />
+                <span className="loading-label">
+                  <LoaderCircle size={19} className="spin" />
+                  Carregando a previsão de {location.name}…
+                </span>
+              </div>
+            ) : error || !data || !today || !selectedDay ? (
+              <section className="error-state" role="alert">
+                <CloudOff size={40} />
+                <h2>Não foi possível carregar a previsão</h2>
+                <p>
+                  {error || 'Não há previsão disponível para esta localidade.'}
+                </p>
+                <button
+                  className="primary-button"
+                  onClick={() => setRevision((value) => value + 1)}
+                >
+                  <RefreshCw size={18} />
+                  Tentar novamente
+                </button>
+                <small>Você também pode buscar outra cidade acima.</small>
+              </section>
+            ) : (
+              <>
+                <section className="current-grid" aria-label="Condições atuais">
+                  <article
+                    className={`current-card ${data.current.isDay ? '' : 'night'}`}
+                  >
+                    <SkyArt
+                      code={data.current.code}
+                      isDay={data.current.isDay}
+                    />
+                    <div className="current-top">
+                      <span className="current-label">Condições atuais</span>
+                      <span className="current-time">
+                        {localTime(data.current.time, data.timezone)}
+                      </span>
+                    </div>
+                    <div className="current-main">
+                      <div className="current-temperature">
+                        {temperature(data.current.temperature, unit)}
+                        <span>{unit === 'celsius' ? 'C' : 'F'}</span>
+                      </div>
+                      <div className="current-condition">
+                        <WeatherIcon
+                          code={data.current.code}
+                          isDay={data.current.isDay}
+                          size={27}
+                        />
+                        <span>{currentDescription}</span>
+                      </div>
+                      <p>
+                        Sensação térmica de{' '}
+                        {temperature(data.current.apparent, unit)}
+                      </p>
+                    </div>
+                    <div className="current-bottom">
+                      <span>
+                        <ArrowUp size={16} />
+                        <span className="sr-only">Máxima de hoje: </span>
+                        {temperature(today.max, unit)}
+                        <span className="current-divider" />
+                        <ArrowDown size={16} />
+                        <span className="sr-only">Mínima de hoje: </span>
+                        {temperature(today.min, unit)}
+                      </span>
+                      <span>Hoje</span>
+                    </div>
+                  </article>
+                  <div className="metrics-grid">
+                    <article className="metric-card">
+                      <div className="metric-label">
+                        <span>Chuva hoje</span>
+                        <Droplets size={21} />
+                      </div>
+                      <div className="metric-value">
+                        {decimal(today.rain)}
+                        <span>mm</span>
+                      </div>
+                      <p>Acumulado previsto</p>
+                    </article>
+                    <article className="metric-card">
+                      <div className="metric-label">
+                        <span>Probabilidade</span>
+                        <CloudRainIcon />
+                      </div>
+                      <div className="metric-value">
+                        {decimal(today.probability)}
+                        <span>%</span>
+                      </div>
+                      <p>Máxima de precipitação hoje</p>
+                    </article>
+                    <article className="metric-card">
+                      <div className="metric-label">
+                        <span>Vento agora</span>
+                        <Wind size={21} />
+                      </div>
+                      <div className="metric-value">
+                        {decimal(data.current.wind)}
+                        <span>km/h</span>
+                      </div>
+                      <p>Velocidade a 10 m do solo</p>
+                    </article>
+                    <article className="metric-card">
+                      <div className="metric-label">
+                        <span>Umidade agora</span>
+                        <Droplets size={21} />
+                      </div>
+                      <div className="metric-value">
+                        {decimal(data.current.humidity)}
+                        <span>%</span>
+                      </div>
+                      <p>Umidade relativa do ar</p>
+                    </article>
                   </div>
-                </>
-              )}
-            </>
-          )}
-          <footer className="footer">
-            <span>
-              <span className="footer-mark">w.</span> Um novo olhar para o
-              tempo.
-            </span>
-            <span>
-              Dados por{' '}
-              <a
-                href="https://open-meteo.com/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open-Meteo <ArrowUpRight size={11} />
-              </a>{' '}
-              · Localidades por{' '}
-              <a
-                href="https://www.geonames.org/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                GeoNames
-              </a>{' '}
-              ·{' '}
-              <a
-                href="https://creativecommons.org/licenses/by/4.0/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                CC BY 4.0
-              </a>
-            </span>
-          </footer>
-        </main>
-      </div>
+                </section>
+                <section
+                  className="week-section"
+                  aria-label="Previsão para sete dias"
+                >
+                  <div className="section-heading">
+                    <h2>Uma semana pela frente</h2>
+                    <span>Escolha um dia para ver os detalhes</span>
+                  </div>
+                  <div className="week-grid">
+                    {data.days.map((day, index) => (
+                      <button
+                        className={`day-card ${day.date === selectedDay.date ? 'selected' : ''}`}
+                        key={day.date}
+                        aria-pressed={day.date === selectedDay.date}
+                        aria-label={`${dayLabel(day, data.timezone, index)}, ${weatherDescription(day.code).label}, máxima ${temperature(day.max, unit)}, mínima ${temperature(day.min, unit)}`}
+                        onClick={() => setSelectedDate(day.date)}
+                      >
+                        <span className="day-name">
+                          {dayLabel(day, data.timezone, index)}
+                        </span>
+                        <span className="day-date">
+                          {new Intl.DateTimeFormat('pt-BR', {
+                            timeZone: data.timezone,
+                            day: '2-digit',
+                            month: '2-digit',
+                          }).format(new Date(day.time * 1000))}
+                        </span>
+                        <WeatherIcon code={day.code} size={34} />
+                        <span className="day-temperatures">
+                          <strong>{temperature(day.max, unit)}</strong>
+                          <span>{temperature(day.min, unit)}</span>
+                        </span>
+                        <span className="day-rain">
+                          <Droplets size={14} />
+                          {decimal(day.rain, ' mm')}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+                <div className="detail-grid">
+                  <div className="forecast-column">
+                    <div className="selected-day-label">
+                      <span>
+                        {dayLabel(
+                          selectedDay,
+                          data.timezone,
+                          data.days.indexOf(selectedDay),
+                        )}
+                      </span>
+                      <span>
+                        {new Intl.DateTimeFormat('pt-BR', {
+                          timeZone: data.timezone,
+                          day: 'numeric',
+                          month: 'long',
+                        }).format(new Date(selectedDay.time * 1000))}
+                      </span>
+                    </div>
+                    <ForecastChart
+                      key={selectedDay.date}
+                      hours={selectedHours}
+                      timezone={data.timezone}
+                      unit={unit}
+                      metric={metric}
+                      onMetricChange={setMetric}
+                    />
+                  </div>
+                  <aside className="daylight-panel">
+                    <div className="panel-heading">
+                      <h2>Luz do dia</h2>
+                      <Sun size={23} className="sun-color" />
+                    </div>
+                    <div className="sun-arc" aria-hidden="true">
+                      <svg viewBox="0 0 260 122">
+                        <path
+                          d="M20 108 A110 90 0 0 1 240 108"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeDasharray="3 7"
+                        />
+                        <circle cx="130" cy="18" r="15" className="sun-orb" />
+                        <line
+                          x1="12"
+                          x2="248"
+                          y1="108"
+                          y2="108"
+                          stroke="currentColor"
+                          strokeWidth="1"
+                        />
+                      </svg>
+                    </div>
+                    <div className="sun-times">
+                      <div>
+                        <Sunrise size={21} />
+                        <span>Nascer do sol</span>
+                        <strong>
+                          {selectedDay.sunrise === null
+                            ? '—'
+                            : localTime(selectedDay.sunrise, data.timezone)}
+                        </strong>
+                      </div>
+                      <div>
+                        <Sunset size={21} />
+                        <span>Pôr do sol</span>
+                        <strong>
+                          {selectedDay.sunset === null
+                            ? '—'
+                            : localTime(selectedDay.sunset, data.timezone)}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="uv-row">
+                      <span>Índice UV máximo</span>
+                      <strong>{decimal(selectedDay.uv)}</strong>
+                    </div>
+                  </aside>
+                </div>
+                <section className="hourly-section">
+                  <div className="section-heading">
+                    <h2>Seu dia, a cada três horas</h2>
+                    <span>Horários de {location.name}</span>
+                  </div>
+                  <div
+                    className="hourly-grid"
+                    role="region"
+                    aria-label="Resumo horário com rolagem"
+                    tabIndex={0}
+                  >
+                    {selectedHours
+                      .filter((_, i) => i % 3 === 0)
+                      .map((hour) => (
+                        <article className="hour-card" key={hour.time}>
+                          <span>{localTime(hour.time, data.timezone)}</span>
+                          <WeatherIcon
+                            code={hour.code}
+                            isDay={
+                              selectedDay.sunrise !== null &&
+                              selectedDay.sunset !== null
+                                ? hour.time >= selectedDay.sunrise &&
+                                  hour.time < selectedDay.sunset
+                                : true
+                            }
+                            size={28}
+                          />
+                          <strong>{temperature(hour.temperature, unit)}</strong>
+                          <small>
+                            <Droplets size={13} />
+                            {decimal(hour.rain, ' mm')}
+                          </small>
+                          <span className="hour-probability">
+                            {decimal(hour.probability, '%')} prob.
+                          </span>
+                        </article>
+                      ))}
+                  </div>
+                </section>
+                <div className="forecast-note">
+                  <p>
+                    Consulta atualizada às{' '}
+                    <strong>
+                      {localTime(data.fetchedAt / 1000, data.timezone)}
+                    </strong>
+                    . Horários em <strong>{data.timezone}</strong>.
+                  </p>
+                  <button
+                    className="text-button"
+                    onClick={() => setRevision((value) => value + 1)}
+                  >
+                    <RefreshCw size={15} />
+                    Atualizar
+                  </button>
+                </div>
+              </>
+            )}
+          </>
+        )}
+        <footer className="footer">
+          <a
+            href="#main"
+            className="footer-brand"
+            onClick={() => setView('overview')}
+          >
+            <BrandMark size={30} />
+            <span>Weather Lab</span>
+          </a>
+          <span>
+            Dados por{' '}
+            <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">
+              Open-Meteo
+            </a>
+            . Localidades por{' '}
+            <a
+              href="https://www.geonames.org/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GeoNames
+            </a>
+            .{' '}
+            <a
+              href="https://creativecommons.org/licenses/by/4.0/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              CC BY 4.0
+            </a>
+            .
+          </span>
+        </footer>
+      </main>
       {notice && (
         <div className="toast" role="status">
-          <Check size={17} />
+          <Check size={19} />
           <span>{notice}</span>
           <button
             className="icon-button"
             aria-label="Fechar mensagem"
             onClick={() => setNotice('')}
           >
-            <X size={15} />
+            <X size={18} />
           </button>
         </div>
       )}
@@ -965,30 +796,26 @@ export default function App() {
               aria-label="Fechar sobre"
               onClick={() => setAbout(false)}
             >
-              <X size={20} />
+              <X size={22} />
             </button>
-            <span className="eyebrow">CURIOSIDADE QUE VIRA CLAREZA</span>
-            <h2 id="about-title">
-              Um novo olhar
-              <br />
-              para o tempo<span>.</span>
-            </h2>
+            <BrandMark size={64} />
+            <h2 id="about-title">Weather Lab</h2>
             <p>
-              O Weather Lab é um projeto de Cristian para explorar previsão do
-              tempo com uma experiência simples, útil e visual.
+              Um painel para consultar temperatura, chuva e condições do tempo.
+              Projeto open source de Cristian, desenvolvido com React,
+              TypeScript e dados da Open-Meteo.
             </p>
             <p>
-              As informações vêm de modelos meteorológicos da Open-Meteo.
-              Valores podem mudar e não substituem alertas oficiais. Chuva é a
-              soma de chuva e pancadas; o gráfico apresenta os acumulados da
-              hora anterior.
+              As informações vêm de modelos meteorológicos e não substituem
+              alertas oficiais. Chuva é a soma de chuva e pancadas no intervalo
+              anterior a cada horário.
             </p>
             <p>
-              Favoritos, cidade e preferências ficam neste navegador. Ao usar
-              sua localização, as coordenadas são enviadas à Open-Meteo para
+              Favoritos e preferências ficam neste navegador. Ao usar sua
+              localização, as coordenadas são enviadas à Open-Meteo para
               consultar a previsão.
             </p>
-            <small>Weather Lab · versão {__APP_VERSION__}</small>
+            <small>Versão {__APP_VERSION__}</small>
           </section>
         </div>
       )}
@@ -997,5 +824,5 @@ export default function App() {
 }
 
 function CloudRainIcon() {
-  return <WeatherIcon code={61} size={18} />
+  return <WeatherIcon code={61} size={21} />
 }

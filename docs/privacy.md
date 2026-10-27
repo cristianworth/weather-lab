@@ -20,7 +20,7 @@ Para remover os dados, limpe o armazenamento do site nas configurações ou ferr
 - **Busca:** o texto digitado, a partir de dois caracteres e após a espera de busca, é enviado a `geocoding-api.open-meteo.com`. A base geográfica usada pelo fornecedor é GeoNames.
 - **Previsão:** coordenadas da localidade escolhida são enviadas a `api.open-meteo.com`, junto com variáveis, período, unidades e fuso.
 - **Minha localização:** o navegador é consultado somente ao acionar esse controle. A posição retornada é usada e persistida como uma localidade; as coordenadas são enviadas ao fornecedor da previsão. Não há acompanhamento contínuo nem busca reversa do nome da cidade.
-- **Fontes:** DM Sans e Manrope são solicitadas ao Google Fonts, podendo envolver `fonts.googleapis.com` e `fonts.gstatic.com`. Há fallback para fontes locais.
+- **Fontes:** Barlow e Barlow Condensed são solicitadas ao Google Fonts, podendo envolver `fonts.googleapis.com` e `fonts.gstatic.com`. Há fallback para fontes locais.
 
 Os serviços externos recebem os metadados de rede e HTTP transmitidos pelo navegador, incluindo o endereço IP. Seus termos e políticas se aplicam a esse processamento. Consulte os [termos e privacidade da Open-Meteo](https://open-meteo.com/en/terms) e a [política do Google](https://policies.google.com/privacy).
 
