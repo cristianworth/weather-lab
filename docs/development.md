@@ -32,7 +32,7 @@ A auditoria axe passou nos estados exercitados de desktop claro e celular escuro
 
 ## Publicação e apresentação
 
-Cristian autorizou commits e pushes autônomos para entregas reais. A publicação usa GitHub Pages, em `https://cristianworth.github.io/weather-lab/`. O build recebe `--base=/weather-lab/`; a marca e o favicon respeitam esse caminho. Uma suíte própria confere o build de produção no mesmo subcaminho antes do deploy.
+A autorização anterior de commits e pushes autônomos passa a seguir o [processo de contribuição](../CONTRIBUTING.md#pull-requests-e-commits), com branch de trabalho, PR e integração autorizada após revisão do diff e checks do SHA atual. A implementação e as decisões rotineiras continuam autônomas no escopo pedido. A publicação usa GitHub Pages, em `https://cristianworth.github.io/weather-lab/`. O build recebe `--base=/weather-lab/`; a marca e o favicon respeitam esse caminho. Uma suíte própria confere o build de produção no mesmo subcaminho antes do deploy.
 
 O workflow verifica formatação, testes de domínio/componentes e cenários de navegador com respostas controladas. Isso mantém os checks de publicação independentes da disponibilidade da Open-Meteo. A suíte completa com API real foi executada localmente. Capturas reais selecionadas foram incluídas no README para uso em portfólio, com data, comando de reprodução e avisos de que a previsão muda.
 

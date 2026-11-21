@@ -112,7 +112,11 @@ O script usa Edge por padrão e aceita `PLAYWRIGHT_CHANNEL=chromium`. Ele consul
 
 ## Pull requests e commits
 
-Envie pull requests para `main`. Descreva problema, comportamento resultante, validação e limitações. Para mudanças visuais, anexe capturas ao PR sem versionar resultados temporários nem dados pessoais.
+Use uma branch curta a partir de `main` remota atualizada e envie pull requests para `main`, preservando alterações e commits locais de outros trabalhos. Reaproveite ou abra uma issue quando o trabalho precisar de acompanhamento, conforme os critérios acima; não cadastre entregas já concluídas apenas para criar histórico. Descreva problema, comportamento resultante, validação, limitações e issue relacionada, quando houver. Mantenha o PR em rascunho enquanto houver revisão ou validação pendente. Para mudanças visuais, anexe capturas ao PR sem versionar resultados temporários nem dados pessoais.
+
+Antes de integrar, revise o diff e os checks do SHA atual; execução pendente ou de outro SHA não valida a revisão. Integre somente com autorização para o conteúdo revisado; mudanças posteriores no diff exigem nova revisão e aprovação. Push direto à `main` exige autorização explícita. Este processo não amplia as permissões operacionais do pedido atual, e CI verde não autoriza merge.
+
+Nesta adoção do GitHub Flow, Cristian autorizou a issue, a branch de trabalho, commits, push dessa branch e PR rascunho; a integração exige revisão independente e aprovação de Cristian para o diff desta adoção. Consulte a [issue #1](https://github.com/cristianworth/weather-lab/issues/1) e o [PR #2](https://github.com/cristianworth/weather-lab/pull/2) para o estado atual. O PR executa checks sem publicar; eventual merge em `main` aciona o GitHub Pages após os checks. Confira CI, deploy e comportamento publicado antes de anunciar a entrega.
 
 Use mensagens claras em inglês, como `fix: preserve selected city after reload` ou `docs: explain forecast data flow`. Não inclua credenciais, arquivos `.env`, dependências, builds, resultados brutos ou temporários.
 
